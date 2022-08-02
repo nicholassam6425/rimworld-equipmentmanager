@@ -65,9 +65,17 @@ namespace EquipmentManager.Windows
                     UpdateAvailableItems_WorkTypes();
                 });
                 UiHelpers.DoGapLineHorizontal(new Rect(rect.x, statsRect.yMax, rect.width, UiHelpers.ElementGap));
-                DoAvailableItems(availableItemsRect, _globallyAvailableWorkTypes, def => { },
-                    def => GetWorkTypeDefTooltip(def, SelectedWorkTypeRule), _currentlyAvailableWorkTypes, thing => { },
-                    thing => GetWorkTypeTooltip(thing, SelectedWorkTypeRule), UpdateAvailableItems_WorkTypes);
+                DoAvailableItems(
+                    availableItemsRect, 
+                    _globallyAvailableWorkTypes, 
+                    def => { },
+                    def => { },
+                    def => GetWorkTypeDefTooltip(def, SelectedWorkTypeRule), 
+                    _currentlyAvailableWorkTypes, 
+                    thing => { },
+                    thing => { },
+                    thing => GetWorkTypeTooltip(thing, SelectedWorkTypeRule), 
+                    UpdateAvailableItems_WorkTypes);
             }
         }
 

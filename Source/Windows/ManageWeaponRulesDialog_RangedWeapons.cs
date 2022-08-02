@@ -158,37 +158,80 @@ namespace EquipmentManager.Windows
                         UpdateAvailableItems_RangedWeapons();
                     });
                 UiHelpers.DoGapLineHorizontal(new Rect(rect.x, statsRect.yMax, rect.width, UiHelpers.ElementGap));
-                DoExclusiveItems(exclusiveItemsRect, RangedWeaponRule.AllRelevantThings,
-                    SelectedRangedWeaponRule.GetWhitelistedItems(), def =>
+                DoExclusiveItems(exclusiveItemsRect, 
+                    RangedWeaponRule.AllRelevantThings,
+                    SelectedRangedWeaponRule.GetWhitelistedItems(), 
+                    //rightclick whitelist
+                    def =>
                     {
                         SelectedRangedWeaponRule.DeleteWhitelistedItem(def.defName);
                         UpdateAvailableItems_RangedWeapons();
-                    }, def =>
+                    }, 
+                    //leftclick whitelist
+                    def =>
+                    {
+                        SelectedRangedWeaponRule.DeleteWhitelistedItem(def.defName);
+                        SelectedRangedWeaponRule.AddBlacklistedItem(def.defname);
+                        UpdateAvailableItems_RangedWeapons();
+                    },
+                    //whitelist add button
+                    def =>
                     {
                         SelectedRangedWeaponRule.AddWhitelistedItem(def);
                         UpdateAvailableItems_RangedWeapons();
-                    }, SelectedRangedWeaponRule.GetBlacklistedItems(), def =>
+                    }, 
+                    SelectedRangedWeaponRule.GetBlacklistedItems(), 
+                    //rightclick blacklist
+                    def =>
                     {
                         SelectedRangedWeaponRule.DeleteBlacklistedItem(def.defName);
                         UpdateAvailableItems_RangedWeapons();
-                    }, def =>
+                    }, 
+                    //leftclick blacklist
+                    def =>
+                    {
+                        SelectedRangedWeaponRule.DeleteBlacklistedItem(def.defName);
+                        SelectedRangedWeaponRule.AddWhitelistedItem(def.defname);
+                        UpdateAvailableItems_RangedWeapons();
+                    },
+                    def =>
                     {
                         SelectedRangedWeaponRule.AddBlacklistedItem(def);
                         UpdateAvailableItems_RangedWeapons();
-                    }, def => GetRangedWeaponDefTooltip(def, SelectedRangedWeaponRule));
+                    }, 
+                    def => GetRangedWeaponDefTooltip(def, SelectedRangedWeaponRule));
                 UiHelpers.DoGapLineHorizontal(new Rect(rect.x, exclusiveItemsRect.yMax, rect.width,
                     UiHelpers.ElementGap));
-                DoAvailableItems(availableItemsRect, _globallyAvailableRangedWeapons, def =>
+                DoAvailableItems(availableItemsRect, 
+                    _globallyAvailableRangedWeapons, 
+                    def =>
                     {
                         SelectedRangedWeaponRule.AddBlacklistedItem(def);
                         UpdateAvailableItems_RangedWeapons();
-                    }, def => GetRangedWeaponDefTooltip(def, SelectedRangedWeaponRule),
+                    }, 
+                    def =>
+                    {
+                        SelectedRangedWeaponRule.AddWhitelistedItem(def);
+                        UpdateAvailableItems_RangedWeapons();
+                    },
+                    def =>
+                    {
+                        SelectedRangedWeaponRule.AddWhitelistedItem(def);
+                        UpdateAvailableItems_RangedWeapons();
+                    },
+                    def => GetRangedWeaponDefTooltip(def, SelectedRangedWeaponRule),
                     _currentlyAvailableRangedWeapons,
                     thing =>
                     {
                         SelectedRangedWeaponRule.AddBlacklistedItem(thing.def);
                         UpdateAvailableItems_RangedWeapons();
-                    }, thing => GetRangedWeaponTooltip(thing, SelectedRangedWeaponRule),
+                    }, 
+                    thing =>
+                    {
+                        SelectedRangedWeaponRule.AddWhitelistedItem(thing.def);
+                        UpdateAvailableItems_RangedWeapons();
+                    }
+                    thing => GetRangedWeaponTooltip(thing, SelectedRangedWeaponRule),
                     UpdateAvailableItems_RangedWeapons);
             }
         }

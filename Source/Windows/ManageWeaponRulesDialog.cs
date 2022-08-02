@@ -48,24 +48,46 @@ namespace EquipmentManager.Windows
             rule.Label = $"{rule.Id}";
         }
 
-        private static void DoAvailableItems(Rect rect, IReadOnlyList<ThingDef> globalItems,
-            Action<ThingDef> globalItemRightClickAction, Func<ThingDef, string> globalTooltipGetter,
-            IReadOnlyList<Thing> currentItems, Action<Thing> currentItemRightClickAction,
-            Func<Thing, string> currentTooltipGetter, Action refreshAction)
+        private static void DoAvailableItems(
+            Rect rect, 
+            IReadOnlyList<ThingDef> globalItems,
+            Action<ThingDef> globalItemRightClickAction, 
+            Action<ThingDef> globalItemLeftClickAction,
+            Func<ThingDef, string> globalTooltipGetter,
+            IReadOnlyList<Thing> currentItems, 
+            Action<Thing> currentItemRightClickAction,
+            Action<Thing> currentItemLeftClickAction,
+            Func<Thing, string> currentTooltipGetter, 
+            Action refreshAction)
         {
             var columnWidth = (rect.width - UiHelpers.ElementGap) / 2f;
             var globalRect = new Rect(rect.x, rect.y, columnWidth, rect.height);
             var gapRect = new Rect(globalRect.xMax, rect.y, UiHelpers.ElementGap, rect.height);
             var currentRect = new Rect(gapRect.xMax, rect.y, columnWidth, rect.height);
-            DoGloballyAvailableItems(globalRect, globalItems, globalItemRightClickAction, refreshAction,
+            DoGloballyAvailableItems(
+                globalRect, 
+                globalItems, 
+                globalItemRightClickAction, 
+                globalItemLeftClickAction,
+                refreshAction,
                 globalTooltipGetter);
             UiHelpers.DoGapLineVertical(gapRect);
-            DoCurrentlyAvailableItems(currentRect, currentItems, currentItemRightClickAction, refreshAction,
+            DoCurrentlyAvailableItems(currentRect, 
+                currentItems, 
+                currentItemRightClickAction, 
+                currentItemLeftClickAction
+                refreshAction,
                 currentTooltipGetter);
         }
 
-        private static void DoBlacklist(Rect rect, IReadOnlyCollection<ThingDef> items, IEnumerable<ThingDef> allItems,
-            Action<ThingDef> addAction, Action<ThingDef> rightClickAction, Func<ThingDef, string> tooltipGetter)
+        private static void DoBlacklist(
+            Rect rect, 
+            IReadOnlyCollection<ThingDef> items, 
+            IEnumerable<ThingDef> allItems,
+            Action<ThingDef> addAction, 
+            Action<ThingDef> rightClickAction, 
+            Action<ThingDef> leftClickAction,
+            Func<ThingDef, string> tooltipGetter)
         {
             var font = Text.Font;
             var anchor = Text.Anchor;
@@ -85,14 +107,25 @@ namespace EquipmentManager.Windows
             Text.Font = font;
             Text.Anchor = anchor;
             ThingBox.DoThingDefBox(
-                new Rect(rect.x, labelRect.yMax + UiHelpers.ElementGap, rect.width,
-                    rect.yMax - (labelRect.yMax + UiHelpers.ElementGap)), new Color(1f, 0.5f, 0.5f, 0.05f),
-                new Color(1f, 0.5f, 0.5f, 0.4f), ItemIconSize, ItemIconGap, ref _blacklistScrollPosition,
-                items.ToList(), rightClickAction, tooltipGetter);
+                new Rect(rect.x, labelRect.yMax + UiHelpers.ElementGap, rect.width, rect.yMax - (labelRect.yMax + UiHelpers.ElementGap)), 
+                new Color(1f, 0.5f, 0.5f, 0.05f),
+                new Color(1f, 0.5f, 0.5f, 0.4f), 
+                ItemIconSize, 
+                ItemIconGap, 
+                ref _blacklistScrollPosition,
+                items.ToList(), 
+                rightClickAction, 
+                leftClickAction,
+                tooltipGetter);
         }
 
-        private static void DoCurrentlyAvailableItems(Rect rect, IReadOnlyList<Thing> items,
-            Action<Thing> rightClickAction, Action refreshAction, Func<Thing, string> tooltipGetter)
+        private static void DoCurrentlyAvailableItems(
+            Rect rect, 
+            IReadOnlyList<Thing> items,
+            Action<Thing> rightClickAction, 
+            Action<Thing> leftClickAction,
+            Action refreshAction, 
+            Func<Thing, string> tooltipGetter)
         {
             var font = Text.Font;
             var anchor = Text.Anchor;
@@ -108,31 +141,61 @@ namespace EquipmentManager.Windows
             Text.Font = font;
             Text.Anchor = anchor;
             ThingBox.DoThingBox(
-                new Rect(rect.x, labelRect.yMax + UiHelpers.ElementGap, rect.width,
-                    rect.yMax - (labelRect.yMax + UiHelpers.ElementGap)), new Color(1f, 1f, 1f, 0.05f),
-                new Color(1f, 1f, 1f, 0.4f), ItemIconSize, ItemIconGap, ref _currentItemsScrollPosition, items,
-                rightClickAction, tooltipGetter);
+                new Rect(rect.x, labelRect.yMax + UiHelpers.ElementGap, rect.width, rect.yMax - (labelRect.yMax + UiHelpers.ElementGap)), 
+                new Color(1f, 1f, 1f, 0.05f),
+                new Color(1f, 1f, 1f, 0.4f), 
+                ItemIconSize, 
+                ItemIconGap, 
+                ref _currentItemsScrollPosition, 
+                items,
+                rightClickAction, 
+                leftClickAction,
+                tooltipGetter);
         }
 
-        private static void DoExclusiveItems(Rect rect, HashSet<ThingDef> allItems,
-            IReadOnlyCollection<ThingDef> whitelistedItems, Action<ThingDef> whitelistedItemsRightClickAction,
-            Action<ThingDef> addToWhitelistAction, IReadOnlyCollection<ThingDef> blacklistedItems,
-            Action<ThingDef> blacklistedItemsRightClickAction, Action<ThingDef> addToBlacklistAction,
+        private static void DoExclusiveItems(
+            Rect rect, 
+            HashSet<ThingDef> allItems,
+            IReadOnlyCollection<ThingDef> whitelistedItems, 
+            Action<ThingDef> whitelistedItemsRightClickAction,
+            Action<ThingDef> whitelistedItemsLeftClickAction,
+            Action<ThingDef> addToWhitelistAction, 
+            IReadOnlyCollection<ThingDef> blacklistedItems,
+            Action<ThingDef> blacklistedItemsRightClickAction, 
+            Action<ThingDef> blacklistedItemsLeftClickAction,
+            Action<ThingDef> addToBlacklistAction,
             Func<ThingDef, string> tooltipGetter)
         {
             var columnWidth = (rect.width - UiHelpers.ElementGap) / 2f;
             var whitelistRect = new Rect(rect.x, rect.y, columnWidth, rect.height);
             var gapRect = new Rect(whitelistRect.xMax, rect.y, UiHelpers.ElementGap, rect.height);
             var blacklistRect = new Rect(gapRect.xMax, rect.y, columnWidth, rect.height);
-            DoWhitelist(whitelistRect, whitelistedItems, allItems, addToWhitelistAction,
-                whitelistedItemsRightClickAction, tooltipGetter);
+            DoWhitelist(
+                whitelistRect, 
+                whitelistedItems, 
+                allItems, 
+                addToWhitelistAction,
+                whitelistedItemsRightClickAction, 
+                whitelistedItemsLeftClickAction,
+                tooltipGetter);
             UiHelpers.DoGapLineVertical(gapRect);
-            DoBlacklist(blacklistRect, blacklistedItems, allItems, addToBlacklistAction,
-                blacklistedItemsRightClickAction, tooltipGetter);
+            DoBlacklist(
+                blacklistRect, 
+                blacklistedItems, 
+                allItems, 
+                addToBlacklistAction,
+                blacklistedItemsRightClickAction, 
+                blacklistedItemsLeftClickAction,
+                tooltipGetter);
         }
 
-        private static void DoGloballyAvailableItems(Rect rect, IReadOnlyList<ThingDef> items,
-            Action<ThingDef> rightClickAction, Action refreshAction, Func<ThingDef, string> tooltipGetter)
+        private static void DoGloballyAvailableItems(
+            Rect rect, 
+            IReadOnlyList<ThingDef> items,
+            Action<ThingDef> rightClickAction, 
+            Action<ThingDef> leftClickAction,
+            Action refreshAction, 
+            Func<ThingDef, string> tooltipGetter)
         {
             var font = Text.Font;
             var anchor = Text.Anchor;
@@ -148,10 +211,16 @@ namespace EquipmentManager.Windows
             Text.Font = font;
             Text.Anchor = anchor;
             ThingBox.DoThingDefBox(
-                new Rect(rect.x, labelRect.yMax + UiHelpers.ElementGap, rect.width,
-                    rect.yMax - (labelRect.yMax + UiHelpers.ElementGap)), new Color(1f, 1f, 1f, 0.05f),
-                new Color(1f, 1f, 1f, 0.4f), ItemIconSize, ItemIconGap, ref _globalItemsScrollPosition, items,
-                rightClickAction, tooltipGetter);
+                new Rect(rect.x, labelRect.yMax + UiHelpers.ElementGap, rect.width, rect.yMax - (labelRect.yMax + UiHelpers.ElementGap)), 
+                new Color(1f, 1f, 1f, 0.05f),
+                new Color(1f, 1f, 1f, 0.4f), 
+                ItemIconSize, 
+                ItemIconGap, 
+                ref _globalItemsScrollPosition, 
+                items,
+                rightClickAction, 
+                leftClickAction,
+                tooltipGetter);
         }
 
         private static void DoRuleSetting(Rect settingRect, Func<bool?> getter, Action<bool?> setter, string label,
@@ -343,10 +412,18 @@ namespace EquipmentManager.Windows
             Text.Font = font;
             Text.Anchor = anchor;
             ThingBox.DoThingDefBox(
-                new Rect(rect.x, labelRect.yMax + UiHelpers.ElementGap, rect.width,
-                    rect.yMax - (labelRect.yMax + UiHelpers.ElementGap)), new Color(0.5f, 1f, 0.5f, 0.05f),
-                new Color(0.5f, 1f, 0.5f, 0.4f), ItemIconSize, ItemIconGap, ref _whitelistScrollPosition,
-                items.ToList(), rightClickAction, tooltipGetter);
+                new Rect(rect.x, labelRect.yMax + UiHelpers.ElementGap, 
+                rect.width,
+                rect.yMax - (labelRect.yMax + UiHelpers.ElementGap)), 
+                new Color(0.5f, 1f, 0.5f, 0.05f),
+                new Color(0.5f, 1f, 0.5f, 0.4f), 
+                ItemIconSize, 
+                ItemIconGap, 
+                ref _whitelistScrollPosition,
+                items.ToList(), 
+                rightClickAction, 
+                leftClickAction,
+                tooltipGetter);
         }
 
         public override void DoWindowContents(Rect inRect)

@@ -8,8 +8,16 @@ namespace EquipmentManager.CustomWidgets
 {
     public static class ThingBox
     {
-        public static void DoThingBox(Rect rect, Color backgroundColor, Color outlineColor, float iconSize,
-            float iconGap, ref Vector2 scrollPosition, IReadOnlyList<Thing> things, Action<Thing> rightClickAction,
+        public static void DoThingBox(
+            Rect rect,
+            Color backgroundColor,
+            Color outlineColor, 
+            float iconSize,
+            float iconGap, 
+            ref Vector2 scrollPosition, 
+            IReadOnlyList<Thing> things, 
+            Action<Thing> rightClickAction,
+            Action<Thing> leftClickAction,
             Func<Thing, string> tooltipGetter)
         {
             var horizontalMargin = GUI.skin.verticalScrollbar.fixedWidth + (iconGap * 2);
@@ -38,7 +46,7 @@ namespace EquipmentManager.CustomWidgets
                     switch (Event.current.button)
                     {
                         case 0:
-                            Find.WindowStack.Add(new Dialog_InfoCard(thing));
+                            leftClickAction(thing);
                             break;
                         case 1:
                             rightClickAction(thing);
@@ -49,9 +57,16 @@ namespace EquipmentManager.CustomWidgets
             Widgets.EndScrollView();
         }
 
-        public static void DoThingDefBox(Rect rect, Color backgroundColor, Color outlineColor, float iconSize,
-            float iconGap, ref Vector2 scrollPosition, IReadOnlyList<ThingDef> things,
-            Action<ThingDef> rightClickAction, Func<ThingDef, string> tooltipGetter)
+        public static void DoThingDefBox(Rect rect, 
+            Color backgroundColor, 
+            Color outlineColor, 
+            float iconSize,
+            float iconGap, 
+            ref Vector2 scrollPosition, 
+            IReadOnlyList<ThingDef> things,
+            Action<ThingDef> rightClickAction, 
+            Action<ThingDef> leftClickAction,
+            Func<ThingDef, string> tooltipGetter)
         {
             var horizontalMargin = GUI.skin.verticalScrollbar.fixedWidth + (iconGap * 2);
             var itemsPerRow = (int) Math.Floor((rect.width - horizontalMargin) / (iconSize + iconGap));
@@ -76,7 +91,7 @@ namespace EquipmentManager.CustomWidgets
                     switch (Event.current.button)
                     {
                         case 0:
-                            Find.WindowStack.Add(new Dialog_InfoCard(thingDef));
+                            leftClickAction(thingDef);
                             break;
                         case 1:
                             rightClickAction(thingDef);
